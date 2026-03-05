@@ -1,0 +1,20 @@
+<template>
+    <div class="slds-form-element" class:slds-has-error={hasError}>
+        <label class="slds-form-element__label">
+            <abbr if:true={required} class="slds-required" title="required">*</abbr>
+            {label}
+        </label>
+        <div class="slds-form-element__control">
+            <textarea class="slds-textarea" value={_internalValue} placeholder={placeholder} maxlength={maxLength} oninput={handleInput} onblur={handleBlur} rows="2"></textarea>
+        </div>
+        
+        <div class="slds-grid slds-grid_align-spread slds-m-top_xxx-small">
+            <div class="slds-col">
+                <p if:true={hasError} class="slds-form-error">Complete this field.</p>
+            </div>
+            <div class="slds-col slds-text-color_weak slds-text-body_small">
+                {characterCount}
+            </div>
+        </div>
+    </div>
+</template>
