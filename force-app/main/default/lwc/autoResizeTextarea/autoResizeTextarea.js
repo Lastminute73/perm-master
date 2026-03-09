@@ -9,6 +9,7 @@ export default class AutoResizeTextarea extends LightningElement {
 
     @track _internalValue = '';
     @track hasError = false;
+    @track isFocused = false;
 
     @api
     get value() {
@@ -31,8 +32,15 @@ export default class AutoResizeTextarea extends LightningElement {
             if (textarea.value !== this._internalValue) {
                 textarea.value = this._internalValue;
             }
-            this.resizeTextarea();
+            if (this.isFocused) {
+                this.resizeTextarea();
+            }
         }
+    }
+
+    handleFocus() {
+        this.isFocused = true;
+        this.resizeTextarea();
     }
 
     handleInput(event) {
@@ -49,6 +57,11 @@ export default class AutoResizeTextarea extends LightningElement {
     }
 
     handleBlur() {
+        this.isFocused = false;
+        const textarea = this.template.querySelector('textarea');
+        if (textarea) {
+            textarea.style.height = '';
+        }
         if (this.required && !this._internalValue) {
             this.hasError = true;
         }
