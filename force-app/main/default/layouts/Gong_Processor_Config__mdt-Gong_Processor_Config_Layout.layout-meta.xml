@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Layout xmlns="http://soap.sforce.com/2006/04/metadata">
-    <fullName>Gong_Processor_Config_Layout</fullName>
+    <fullName>Gong_Processor_Config__mdt-Gong_Processor_Config_Layout</fullName>
     <layoutSections>
         <customLabel>false</customLabel>
         <detailHeading>false</detailHeading>
