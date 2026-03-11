@@ -2,7 +2,7 @@
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <name>Results - Pending Review</name>
     <description>Gong processing results awaiting review, grouped by result type. Use this to approve or reject proposed actions.</description>
-    <reportType>CustomEntity$Gong_Processing_Result__c</reportType>
+    <reportType>CustomEntity$Gong_Processing_Run__c@Gong_Processing_Result__c.Gong_Processing_Run__c</reportType>
     <format>Summary</format>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>

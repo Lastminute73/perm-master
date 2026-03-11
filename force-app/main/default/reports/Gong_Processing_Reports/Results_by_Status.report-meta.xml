@@ -2,7 +2,7 @@
 <Report xmlns="http://soap.sforce.com/2006/04/metadata">
     <name>Results by Status</name>
     <description>All processing results grouped by status, then by result type. Useful for tracking what has been approved, applied, or is still pending.</description>
-    <reportType>CustomEntity$Gong_Processing_Result__c</reportType>
+    <reportType>CustomEntity$Gong_Processing_Run__c@Gong_Processing_Result__c.Gong_Processing_Run__c</reportType>
     <format>Summary</format>
     <showDetails>true</showDetails>
     <showGrandTotal>true</showGrandTotal>
