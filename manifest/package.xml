@@ -58,6 +58,14 @@
     </types>
     <types>
         <members>*</members>
+        <name>Report</name>
+    </types>
+    <types>
+        <members>*</members>
+        <name>ReportFolder</name>
+    </types>
+    <types>
+        <members>*</members>
         <name>CustomField</name>
     </types>
     <version>65.0</version>

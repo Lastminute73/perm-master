@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Report xmlns="http://soap.sforce.com/2006/04/metadata">
+    <name>Results - Pending Review</name>
+    <description>Gong processing results awaiting review, grouped by result type. Use this to approve or reject proposed actions.</description>
+    <reportType>CustomEntity$Gong_Processing_Result__c</reportType>
+    <format>Summary</format>
+    <showDetails>true</showDetails>
+    <showGrandTotal>true</showGrandTotal>
+    <showSubTotals>true</showSubTotals>
+    <timeFrameFilter>
+        <dateColumn>CREATED_DATE</dateColumn>
+        <interval>INTERVAL_CUSTOM</interval>
+    </timeFrameFilter>
+    <filter>
+        <criteriaItems>
+            <column>Gong_Processing_Result__c.Status__c</column>
+            <columnToColumn>false</columnToColumn>
+            <isUnlocked>true</isUnlocked>
+            <operator>equals</operator>
+            <value>Pending Review</value>
+        </criteriaItems>
+    </filter>
+    <groupingsDown>
+        <dateGranularity>Day</dateGranularity>
+        <field>Gong_Processing_Result__c.Result_Type__c</field>
+        <sortOrder>Asc</sortOrder>
+    </groupingsDown>
+    <columns>
+        <field>Gong_Processing_Result__c.Email__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.First_Name__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.Last_Name__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.AI_Cleaned_First_Name__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.AI_Cleaned_Last_Name__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.Domain__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.Account__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.AI_Quality_Score__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.AI_Is_Real_Contact__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.Matched_Record_Name__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.Activity_Type__c</field>
+    </columns>
+    <columns>
+        <field>Gong_Processing_Result__c.Activity_Subject__c</field>
+    </columns>
+    <sortColumn>Gong_Processing_Result__c.AI_Quality_Score__c</sortColumn>
+    <sortOrder>Desc</sortOrder>
+</Report>
