@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ListView xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Pending_Review</fullName>
+    <columns>NAME</columns>
+    <columns>Email__c</columns>
+    <columns>First_Name__c</columns>
+    <columns>Last_Name__c</columns>
+    <columns>AI_Cleaned_First_Name__c</columns>
+    <columns>AI_Cleaned_Last_Name__c</columns>
+    <columns>AI_Quality_Score__c</columns>
+    <columns>Result_Type__c</columns>
+    <columns>Domain__c</columns>
+    <columns>Account__c</columns>
+    <columns>Status__c</columns>
+    <filterScope>Everything</filterScope>
+    <filters>
+        <field>Status__c</field>
+        <operation>equals</operation>
+        <value>Pending Review</value>
+    </filters>
+    <label>Pending Review</label>
+</ListView>

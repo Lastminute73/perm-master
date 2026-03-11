@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Result_Type__c</fullName>
+    <label>Result Type</label>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>New Contact</fullName>
+                <default>false</default>
+                <label>New Contact</label>
+            </value>
+            <value>
+                <fullName>Link to Contact</fullName>
+                <default>false</default>
+                <label>Link to Contact</label>
+            </value>
+            <value>
+                <fullName>Link to Lead</fullName>
+                <default>false</default>
+                <label>Link to Lead</label>
+            </value>
+            <value>
+                <fullName>Free Email Excluded</fullName>
+                <default>false</default>
+                <label>Free Email Excluded</label>
+            </value>
+            <value>
+                <fullName>Invalid Email</fullName>
+                <default>false</default>
+                <label>Invalid Email</label>
+            </value>
+            <value>
+                <fullName>Internal Email</fullName>
+                <default>false</default>
+                <label>Internal Email</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

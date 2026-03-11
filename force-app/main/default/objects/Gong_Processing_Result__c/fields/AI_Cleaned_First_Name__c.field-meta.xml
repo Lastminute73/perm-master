@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>AI_Cleaned_First_Name__c</fullName>
+    <label>AI Cleaned First Name</label>
+    <length>80</length>
+    <type>Text</type>
+</CustomField>

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>Default</label>
+    <protected>false</protected>
+    <values>
+        <field>Internal_Domain__c</field>
+        <value xsi:type="xsd:string">permutive.com</value>
+    </values>
+    <values>
+        <field>Excluded_Domains__c</field>
+        <value xsi:type="xsd:string">gmail.com,yahoo.com,yahoo.co.uk,hotmail.com,hotmail.co.uk,outlook.com,outlook.co.uk,aol.com,icloud.com,me.com,mac.com,mail.com,live.com,msn.com,ymail.com,protonmail.com,proton.me,zoho.com,gmx.com,gmx.net,fastmail.com,tutanota.com,inbox.com,att.net,comcast.net,verizon.net,sbcglobal.net,cox.net,charter.net,earthlink.net,optonline.net,rediffmail.com</value>
+    </values>
+    <values>
+        <field>Batch_Size__c</field>
+        <value xsi:type="xsd:double">200</value>
+    </values>
+    <values>
+        <field>AI_Batch_Size__c</field>
+        <value xsi:type="xsd:double">50</value>
+    </values>
+    <values>
+        <field>AI_Enabled__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>AI_Model__c</field>
+        <value xsi:type="xsd:string">claude-sonnet-4-20250514</value>
+    </values>
+</CustomMetadata>
