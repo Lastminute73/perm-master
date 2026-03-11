@@ -191,6 +191,7 @@ private class GongAIAnalyzerQueueableTest {
             (Gong_Processing_Run__c) testData.get('run');
 
         Test.setMock(HttpCalloutMock.class, new AnthropicMock(testEmail));
+        GongAIAnalyzerQueueable.testApiKey = 'test-key';
 
         Test.startTest();
         GongAIAnalyzerQueueable job = new GongAIAnalyzerQueueable(run.Id);
@@ -228,6 +229,7 @@ private class GongAIAnalyzerQueueableTest {
 
         Test.setMock(HttpCalloutMock.class,
             new AnthropicCodeBlockMock(testEmail));
+        GongAIAnalyzerQueueable.testApiKey = 'test-key';
 
         Test.startTest();
         GongAIAnalyzerQueueable job = new GongAIAnalyzerQueueable(run.Id);
@@ -258,6 +260,7 @@ private class GongAIAnalyzerQueueableTest {
             (Gong_Processing_Run__c) testData.get('run');
 
         Test.setMock(HttpCalloutMock.class, new AnthropicErrorMock());
+        GongAIAnalyzerQueueable.testApiKey = 'test-key';
 
         Test.startTest();
         GongAIAnalyzerQueueable job = new GongAIAnalyzerQueueable(run.Id);

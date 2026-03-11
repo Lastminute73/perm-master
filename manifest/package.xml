@@ -42,11 +42,7 @@
     </types>
     <types>
         <members>*</members>
-        <name>NamedCredential</name>
-    </types>
-    <types>
-        <members>*</members>
-        <name>ExternalCredential</name>
+        <name>RemoteSiteSetting</name>
     </types>
     <types>
         <members>*</members>

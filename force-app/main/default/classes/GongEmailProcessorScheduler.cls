@@ -22,7 +22,7 @@ public with sharing class GongEmailProcessorScheduler implements Schedulable {
         // Start with Tasks first (chains to Events in finish())
         GongEmailProcessorBatch taskBatch =
             new GongEmailProcessorBatch(
-                GongEmailProcessorBatch.ActivityType.TASK_TYPE, run.Id
+                GongEmailProcessorBatch.ACTIVITY_TASK, run.Id
             );
         Database.executeBatch(taskBatch, batchSize);
     }

@@ -212,8 +212,4 @@
         <field>Gong_Processing_Result__c.Error_Message__c</field>
         <readable>true</readable>
     </fieldPermissions>
-    <externalCredentialPrincipalAccesses>
-        <enabled>true</enabled>
-        <externalCredentialPrincipal>Anthropic_API - Anthropic_API_Principal</externalCredentialPrincipal>
-    </externalCredentialPrincipalAccesses>
 </PermissionSet>

@@ -1,38 +1,27 @@
 /**
  * Integration tests for GongEmailProcessorBatch and GongEmailProcessorScheduler.
- * Creates test data and runs the batch to verify Gong_Processing_Result__c records
- * are created with the correct Result_Type__c values.
  *
  * NOTE: The Gong managed package field Gong__Gong_Participants_Emails__c may not
- * exist in all orgs. Tests check for field accessibility and skip gracefully if
- * the field is not present.
+ * exist in all orgs. Tests check for field accessibility and skip gracefully.
+ * Task/Event AccountId is read-only; we use WhatId to relate to Account.
  */
 @IsTest
 private class GongEmailProcessorBatchTest {
 
     private static final String GONG_EMAIL_FIELD = 'Gong__Gong_Participants_Emails__c';
 
-    /**
-     * Checks whether the Gong managed package email field exists on Task.
-     */
     private static Boolean isGongFieldAvailable() {
         return SObjectType.Task.fields.getMap().containsKey(
             GONG_EMAIL_FIELD.toLowerCase()
         );
     }
 
-    /**
-     * Checks whether the Gong managed package email field exists on Event.
-     */
     private static Boolean isGongEventFieldAvailable() {
         return SObjectType.Event.fields.getMap().containsKey(
             GONG_EMAIL_FIELD.toLowerCase()
         );
     }
 
-    /**
-     * Helper: creates a Gong_Processing_Run__c record for batch tracking.
-     */
     private static Gong_Processing_Run__c createRun() {
         Gong_Processing_Run__c run = new Gong_Processing_Run__c(
             Run_Date__c = Datetime.now(),
@@ -42,9 +31,6 @@ private class GongEmailProcessorBatchTest {
         return run;
     }
 
-    /**
-     * Helper: creates standard test data (Account, Contact, Lead).
-     */
     private static Map<String, Object> createTestData() {
         Account acct = new Account(Name = 'Test Account');
         insert acct;
@@ -72,24 +58,19 @@ private class GongEmailProcessorBatchTest {
         };
     }
 
-    // ── Batch Tests (Task type) ──────────────────────────────────────────
-
     @IsTest
     static void batch_tasksWithMatchingContact_createsLinkToContactResult() {
         if (!isGongFieldAvailable()) {
-            // Field not available; skip test gracefully
-            System.assert(true,
-                'Gong managed package field not available; test skipped');
+            System.assert(true, 'Gong field not available; test skipped');
             return;
         }
 
         Map<String, Object> data = createTestData();
         Account acct = (Account) data.get('account');
 
-        // Create a Task with the Gong email field set to a known contact email
         Task t = new Task(
             Subject = 'Gong Call - Contact Match',
-            AccountId = acct.Id
+            WhatId = acct.Id
         );
         t.put(GONG_EMAIL_FIELD, 'existing.contact@external.com');
         insert t;
@@ -98,14 +79,13 @@ private class GongEmailProcessorBatchTest {
 
         Test.startTest();
         GongEmailProcessorBatch batch = new GongEmailProcessorBatch(
-            GongEmailProcessorBatch.ActivityType.TASK_TYPE, run.Id
+            GongEmailProcessorBatch.ACTIVITY_TASK, run.Id
         );
         Database.executeBatch(batch, 200);
         Test.stopTest();
 
-        // Verify result record was created
         List<Gong_Processing_Result__c> results = [
-            SELECT Result_Type__c, Email__c, Activity_Id__c, Matched_Record_Id__c
+            SELECT Result_Type__c, Email__c, Matched_Record_Id__c
             FROM Gong_Processing_Result__c
             WHERE Gong_Processing_Run__c = :run.Id
         ];
@@ -136,7 +116,7 @@ private class GongEmailProcessorBatchTest {
 
         Task t = new Task(
             Subject = 'Gong Call - Lead Match',
-            AccountId = acct.Id
+            WhatId = acct.Id
         );
         t.put(GONG_EMAIL_FIELD, 'lead.person@prospect.com');
         insert t;
@@ -145,7 +125,7 @@ private class GongEmailProcessorBatchTest {
 
         Test.startTest();
         GongEmailProcessorBatch batch = new GongEmailProcessorBatch(
-            GongEmailProcessorBatch.ActivityType.TASK_TYPE, run.Id
+            GongEmailProcessorBatch.ACTIVITY_TASK, run.Id
         );
         Database.executeBatch(batch, 200);
         Test.stopTest();
@@ -173,7 +153,7 @@ private class GongEmailProcessorBatchTest {
 
         Task t = new Task(
             Subject = 'Gong Call - New Person',
-            AccountId = acct.Id
+            WhatId = acct.Id
         );
         t.put(GONG_EMAIL_FIELD, 'new.person@newcompany.com');
         insert t;
@@ -182,7 +162,7 @@ private class GongEmailProcessorBatchTest {
 
         Test.startTest();
         GongEmailProcessorBatch batch = new GongEmailProcessorBatch(
-            GongEmailProcessorBatch.ActivityType.TASK_TYPE, run.Id
+            GongEmailProcessorBatch.ACTIVITY_TASK, run.Id
         );
         Database.executeBatch(batch, 200);
         Test.stopTest();
@@ -213,9 +193,8 @@ private class GongEmailProcessorBatchTest {
 
         Task t = new Task(
             Subject = 'Gong Call - Mixed',
-            AccountId = acct.Id
+            WhatId = acct.Id
         );
-        // Comma-separated: one matching contact, one new
         t.put(GONG_EMAIL_FIELD,
             'existing.contact@external.com, brand.new@unknown.com');
         insert t;
@@ -224,7 +203,7 @@ private class GongEmailProcessorBatchTest {
 
         Test.startTest();
         GongEmailProcessorBatch batch = new GongEmailProcessorBatch(
-            GongEmailProcessorBatch.ActivityType.TASK_TYPE, run.Id
+            GongEmailProcessorBatch.ACTIVITY_TASK, run.Id
         );
         Database.executeBatch(batch, 200);
         Test.stopTest();
@@ -240,8 +219,6 @@ private class GongEmailProcessorBatchTest {
             'Should have at least two result records for two different emails');
     }
 
-    // ── Task -> Event Chaining ───────────────────────────────────────────
-
     @IsTest
     static void batch_taskFinish_chainsToEventBatch() {
         if (!isGongFieldAvailable()) {
@@ -252,10 +229,9 @@ private class GongEmailProcessorBatchTest {
         Map<String, Object> data = createTestData();
         Account acct = (Account) data.get('account');
 
-        // Create a Task so the batch has something to process
         Task t = new Task(
             Subject = 'Gong Call - Chain Test',
-            AccountId = acct.Id
+            WhatId = acct.Id
         );
         t.put(GONG_EMAIL_FIELD, 'chain.test@company.com');
         insert t;
@@ -264,13 +240,11 @@ private class GongEmailProcessorBatchTest {
 
         Test.startTest();
         GongEmailProcessorBatch taskBatch = new GongEmailProcessorBatch(
-            GongEmailProcessorBatch.ActivityType.TASK_TYPE, run.Id
+            GongEmailProcessorBatch.ACTIVITY_TASK, run.Id
         );
         Database.executeBatch(taskBatch, 200);
         Test.stopTest();
 
-        // After stopTest, the Task batch finish() should have attempted
-        // to chain to the Event batch. Verify the run record was updated.
         Gong_Processing_Run__c updatedRun = [
             SELECT Total_Tasks_Processed__c, Batch_Job_Id__c
             FROM Gong_Processing_Run__c
@@ -279,8 +253,6 @@ private class GongEmailProcessorBatchTest {
         System.assertNotEquals(null, updatedRun.Batch_Job_Id__c,
             'Run should have Batch_Job_Id set by the batch start');
     }
-
-    // ── Scheduler Test ───────────────────────────────────────────────────
 
     @IsTest
     static void scheduler_execute_createRunAndStartBatch() {
@@ -298,7 +270,6 @@ private class GongEmailProcessorBatchTest {
         );
         Test.stopTest();
 
-        // Verify a processing run was created
         List<Gong_Processing_Run__c> runs = [
             SELECT Id, Status__c
             FROM Gong_Processing_Run__c
@@ -308,33 +279,23 @@ private class GongEmailProcessorBatchTest {
             'Scheduler should create a Gong_Processing_Run__c record');
     }
 
-    // ── Edge Case: No Gong Field ─────────────────────────────────────────
-
     @IsTest
     static void batch_withoutGongField_handledGracefully() {
-        // This test verifies the batch can be instantiated even if we
-        // cannot create Tasks with the Gong field. It exercises the
-        // constructor and start/execute/finish code paths.
         Gong_Processing_Run__c run = createRun();
 
         Test.startTest();
-        // Run the Event batch type (which likely has no matching records)
         GongEmailProcessorBatch eventBatch = new GongEmailProcessorBatch(
-            GongEmailProcessorBatch.ActivityType.EVENT_TYPE, run.Id
+            GongEmailProcessorBatch.ACTIVITY_EVENT, run.Id
         );
         try {
             Database.executeBatch(eventBatch, 200);
         } catch (Exception e) {
-            // If the Gong field does not exist, the query will fail.
-            // This is expected in orgs without the managed package.
             System.assert(e.getMessage().contains('Gong__')
                 || e.getMessage().contains('No such column'),
                 'Expected error related to missing Gong field: ' + e.getMessage());
         }
         Test.stopTest();
     }
-
-    // ── Run Record Update ────────────────────────────────────────────────
 
     @IsTest
     static void batch_eventType_updatesRunRecordCounts() {
@@ -346,7 +307,6 @@ private class GongEmailProcessorBatchTest {
         Map<String, Object> data = createTestData();
         Account acct = (Account) data.get('account');
 
-        // Simulate Task batch already ran and wrote partial counts
         Gong_Processing_Run__c run = createRun();
         run.Total_Activities_Processed__c = 5;
         run.Total_Tasks_Processed__c = 5;
@@ -358,10 +318,9 @@ private class GongEmailProcessorBatchTest {
         run.Invalid_Email_Count__c = 1;
         update run;
 
-        // Create an Event with the Gong email field
         Event e = new Event(
             Subject = 'Gong Meeting - Event Test',
-            AccountId = acct.Id,
+            WhatId = acct.Id,
             DurationInMinutes = 60,
             ActivityDateTime = Datetime.now()
         );
@@ -370,7 +329,7 @@ private class GongEmailProcessorBatchTest {
 
         Test.startTest();
         GongEmailProcessorBatch eventBatch = new GongEmailProcessorBatch(
-            GongEmailProcessorBatch.ActivityType.EVENT_TYPE, run.Id
+            GongEmailProcessorBatch.ACTIVITY_EVENT, run.Id
         );
         Database.executeBatch(eventBatch, 200);
         Test.stopTest();
@@ -382,7 +341,6 @@ private class GongEmailProcessorBatchTest {
             WHERE Id = :run.Id
         ];
 
-        // Event batch should add to existing counts
         System.assert(updatedRun.Total_Activities_Processed__c >= 6,
             'Total activities should include both Task and Event counts');
         System.assert(updatedRun.Total_Events_Processed__c >= 1,

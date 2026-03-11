@@ -3,19 +3,20 @@
  * Processes orphaned Tasks/Events (no WhoId) that have Gong participant emails.
  * Matches emails against existing Contacts/Leads and creates processing result records.
  *
- * Since QueryLocator cannot UNION Task and Event, this batch accepts an ActivityType
+ * Since QueryLocator cannot UNION Task and Event, this batch accepts an activityType
  * parameter. The Task batch chains to the Event batch in finish().
  */
 public with sharing class GongEmailProcessorBatch
     implements Database.Batchable<SObject>, Database.Stateful {
 
-    public enum ActivityType { TASK_TYPE, EVENT_TYPE }
+    public static final String ACTIVITY_TASK = 'Task';
+    public static final String ACTIVITY_EVENT = 'Event';
 
     private static final String GONG_EMAIL_FIELD = 'Gong__Gong_Participants_Emails__c';
 
     // Stateful tracking
     private Id runId;
-    private ActivityType activityType;
+    private String activityType;
     private Integer totalActivities = 0;
     private Integer totalTasks = 0;
     private Integer totalEvents = 0;
@@ -31,7 +32,7 @@ public with sharing class GongEmailProcessorBatch
     // to avoid duplicates within the same run
     private Set<String> processedNewEmails = new Set<String>();
 
-    public GongEmailProcessorBatch(ActivityType actType, Id runId) {
+    public GongEmailProcessorBatch(String actType, Id runId) {
         this.activityType = actType;
         this.runId = runId;
     }
@@ -44,7 +45,7 @@ public with sharing class GongEmailProcessorBatch
         );
 
         String query;
-        if (activityType == ActivityType.TASK_TYPE) {
+        if (activityType == ACTIVITY_TASK) {
             query = 'SELECT Id, Subject, AccountId, ' + GONG_EMAIL_FIELD
                   + ' FROM Task'
                   + ' WHERE ' + GONG_EMAIL_FIELD + ' != null'
@@ -87,7 +88,7 @@ public with sharing class GongEmailProcessorBatch
             // Still count activities even if no valid emails
             for (SObject activity : scope) {
                 totalActivities++;
-                if (activityType == ActivityType.TASK_TYPE) {
+                if (activityType == ACTIVITY_TASK) {
                     totalTasks++;
                 } else {
                     totalEvents++;
@@ -122,10 +123,9 @@ public with sharing class GongEmailProcessorBatch
             Id accountId = (Id) activity.get('AccountId');
             String subject = (String) activity.get('Subject');
             String emailField = (String) activity.get(GONG_EMAIL_FIELD);
-            String sObjectType = activityType == ActivityType.TASK_TYPE ? 'Task' : 'Event';
 
             totalActivities++;
-            if (activityType == ActivityType.TASK_TYPE) {
+            if (activityType == ACTIVITY_TASK) {
                 totalTasks++;
             } else {
                 totalEvents++;
@@ -142,7 +142,7 @@ public with sharing class GongEmailProcessorBatch
                     Domain__c = domain,
                     Account__c = accountId,
                     Activity_Id__c = activityId,
-                    Activity_Type__c = sObjectType,
+                    Activity_Type__c = activityType,
                     Activity_Subject__c = subject != null
                         ? subject.abbreviate(255) : null,
                     Status__c = 'Pending Review'
@@ -198,18 +198,18 @@ public with sharing class GongEmailProcessorBatch
 
     public void finish(Database.BatchableContext bc) {
         // If this was the Task batch, chain to Event batch
-        if (activityType == ActivityType.TASK_TYPE) {
+        if (activityType == ACTIVITY_TASK) {
             updateRunRecord(false);
             Gong_Processor_Config__mdt config = GongEmailProcessorHelper.getConfig();
             Integer batchSize = config != null && config.Batch_Size__c != null
                 ? Integer.valueOf(config.Batch_Size__c) : 200;
             GongEmailProcessorBatch eventBatch =
-                new GongEmailProcessorBatch(ActivityType.EVENT_TYPE, runId);
+                new GongEmailProcessorBatch(ACTIVITY_EVENT, runId);
             Database.executeBatch(eventBatch, batchSize);
             return;
         }
 
-        // Event batch (or if Task batch had no events to chain to) - finalize
+        // Event batch - finalize
         updateRunRecord(true);
 
         // Chain to AI Analyzer if enabled
@@ -229,7 +229,7 @@ public with sharing class GongEmailProcessorBatch
         Gong_Processing_Run__c run;
 
         // For Event batch, add to existing Task batch counts
-        if (activityType == ActivityType.EVENT_TYPE) {
+        if (activityType == ACTIVITY_EVENT) {
             run = [
                 SELECT Total_Activities_Processed__c, Total_Tasks_Processed__c,
                        Total_Events_Processed__c, New_Contacts_Proposed__c,

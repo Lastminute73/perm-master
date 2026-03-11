@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RemoteSiteSetting xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Anthropic_API</fullName>
+    <url>https://api.anthropic.com</url>
+    <description>Anthropic Claude API for Gong email processing AI analysis</description>
+    <disableProtocolSecurity>false</disableProtocolSecurity>
+    <isActive>true</isActive>
+</RemoteSiteSetting>

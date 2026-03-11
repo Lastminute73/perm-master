@@ -14,6 +14,9 @@ public with sharing class GongAIAnalyzerQueueable
 
     private static final Integer RESULTS_PER_CALL = 50;
 
+    @TestVisible
+    private static String testApiKey;
+
     public GongAIAnalyzerQueueable(Id runId) {
         this.runId = runId;
     }
@@ -113,10 +116,22 @@ public with sharing class GongAIAnalyzerQueueable
     }
 
     private String callAnthropicAPI(String prompt, Gong_Processor_Config__mdt config) {
+        String apiKey = Test.isRunningTest() && String.isNotBlank(testApiKey)
+            ? testApiKey
+            : (config != null ? config.API_Key__c : null);
+        if (String.isBlank(apiKey)) {
+            throw new GongAIException(
+                'Anthropic API key not configured. Set API_Key__c in '
+                + 'Gong Processor Config custom metadata.'
+            );
+        }
+
         HttpRequest req = new HttpRequest();
-        req.setEndpoint('callout:Anthropic_API/v1/messages');
+        req.setEndpoint('https://api.anthropic.com/v1/messages');
         req.setMethod('POST');
         req.setHeader('Content-Type', 'application/json');
+        req.setHeader('x-api-key', apiKey);
+        req.setHeader('anthropic-version', '2023-06-01');
         req.setTimeout(120000); // 2 minutes
 
         String model = config != null && String.isNotBlank(config.AI_Model__c)

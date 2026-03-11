@@ -26,4 +26,8 @@
         <field>AI_Model__c</field>
         <value xsi:type="xsd:string">claude-sonnet-4-20250514</value>
     </values>
+    <values>
+        <field>API_Key__c</field>
+        <value xsi:type="xsd:string"></value>
+    </values>
 </CustomMetadata>
