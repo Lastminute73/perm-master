@@ -42,6 +42,10 @@
                 <field>IsProtected</field>
             </layoutItems>
             <layoutItems>
+                <behavior>Readonly</behavior>
+                <field>NamespacePrefix</field>
+            </layoutItems>
+            <layoutItems>
                 <behavior>Edit</behavior>
                 <field>AI_Batch_Size__c</field>
             </layoutItems>
