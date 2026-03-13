@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Account.Est_Annual_Revenue__c</members>
+        <members>Account.Portfolio_Class__c</members>
+        <members>Account.Regional_Director__c</members>
+        <members>Account.Type__c</members>
+        <members>Agency_Association__c.Account__c</members>
+        <members>Agency_Association__c.Agency__c</members>
+        <name>CustomField</name>
+    </types>
+    <types>
+        <members>Agency_Association__c</members>
+        <name>CustomObject</name>
+    </types>
+    <types>
+        <members>Account_Record_Page</members>
+        <name>FlexiPage</name>
+    </types>
+    <types>
+        <members>Account-Customer</members>
+        <members>Account-General</members>
+        <members>Agency_Association__c-Agency_Association_Layout</members>
+        <name>Layout</name>
+    </types>
+    <types>
+        <members>autoResizeTextarea</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <version>65.0</version>
+</Package>
