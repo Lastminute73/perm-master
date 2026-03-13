@@ -30,16 +30,6 @@
                 <identifier>force_detailPanel</identifier>
             </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>relatedListApiName</name>
-                    <value>Agency_Associations__r</value>
-                </componentInstanceProperties>
-                <componentName>force:relatedListSingleContainer</componentName>
-                <identifier>force_relatedListSingleContainer_AgencyAssociations</identifier>
-            </componentInstance>
-        </itemInstances>
         <name>Facet-b8efd5b2-354e-4639-bb4b-6d1b46d34345</name>
         <type>Facet</type>
     </flexiPageRegions>
