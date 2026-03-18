@@ -1,0 +1,193 @@
+<!-- repPipelineHeatmap.html -->
+<template>
+    <lightning-card>
+
+        <h2 slot="title" class="slds-card__header-title">
+            <lightning-icon icon-name="standard:opportunity" size="small"
+                class="slds-m-right_x-small"></lightning-icon>
+            Pipeline Heatmap
+            <template lwc:if={subtitle}>
+                <span class="rep-subtitle">{subtitle}</span>
+            </template>
+        </h2>
+
+        <!-- View level + Metric toggles in the card actions slot -->
+        <div slot="actions" class="actions-wrap">
+            <lightning-button-group class="slds-m-right_medium">
+                <lightning-button label="Rep"
+                    data-level="rep"
+                    variant={repLevelVariant}
+                    onclick={onViewLevel}>
+                </lightning-button>
+                <lightning-button label="Territory"
+                    data-level="territory"
+                    variant={territoryLevelVariant}
+                    onclick={onViewLevel}>
+                </lightning-button>
+                <lightning-button label="Company"
+                    data-level="company"
+                    variant={companyLevelVariant}
+                    onclick={onViewLevel}>
+                </lightning-button>
+            </lightning-button-group>
+
+            <lightning-button-group>
+                <lightning-button label="Count"
+                    data-metric="count"
+                    variant={countVariant}
+                    onclick={onMetric}>
+                </lightning-button>
+                <lightning-button label="ACV"
+                    data-metric="acv"
+                    variant={acvVariant}
+                    onclick={onMetric}>
+                </lightning-button>
+                <lightning-button label="Weighted"
+                    data-metric="weighted"
+                    variant={weightedVariant}
+                    onclick={onMetric}>
+                </lightning-button>
+            </lightning-button-group>
+        </div>
+
+        <div class="slds-card__body slds-card__body_inner">
+
+            <!-- Rep picker (Rep view + showRepSelector on App Pages) -->
+            <template lwc:if={showRepPicker}>
+                <div class="slds-m-bottom_medium">
+                    <lightning-combobox
+                        label="Sales Rep"
+                        placeholder="Select a rep&hellip;"
+                        value={_userId}
+                        options={repOptions}
+                        onchange={onRepChange}>
+                    </lightning-combobox>
+                </div>
+            </template>
+
+            <!-- Territory picker (Territory view) -->
+            <template lwc:if={showTerritoryPicker}>
+                <div class="slds-m-bottom_medium">
+                    <lightning-combobox
+                        label="Territory"
+                        placeholder="Select a territory&hellip;"
+                        value={_territory}
+                        options={territoryOptions}
+                        onchange={onTerritoryChange}>
+                    </lightning-combobox>
+                </div>
+            </template>
+
+            <!-- Loading state -->
+            <template lwc:if={isLoading}>
+                <div class="loading-wrap">
+                    <lightning-spinner
+                        alternative-text="Loading pipeline data"
+                        size="medium">
+                    </lightning-spinner>
+                </div>
+            </template>
+
+            <!-- Content (shown after data resolves) -->
+            <template lwc:if={showContent}>
+
+                <template lwc:if={hasData}>
+                    <div class="heatmap-scroll">
+                        <div class="heatmap-grid" style={gridStyle}>
+
+                            <!-- Top-left corner spacer -->
+                            <div class="corner"></div>
+
+                            <!-- Quarter column headers -->
+                            <template for:each={quarters} for:item="q">
+                                <div key={q.id} class={q.headerCls}>
+                                    <span class="q-label">{q.label}</span>
+                                    <span class="q-sub">{q.sub}</span>
+                                </div>
+                            </template>
+
+                            <!--
+                                Stage rows — each wrapper uses display:contents so its
+                                children (stage label + cells) become direct grid items,
+                                allowing CSS Grid auto-placement to lay them out correctly.
+                            -->
+                            <template for:each={heatmapRows} for:item="row">
+                                <div key={row.stage} style="display:contents">
+
+                                    <!-- Stage name + row total (column 1) -->
+                                    <div class="stage-cell">
+                                        <span class="stage-name">{row.stage}</span>
+                                        <span class="stage-total">{row.rowTotal}</span>
+                                    </div>
+
+                                    <!-- Data cells (columns 2–N) -->
+                                    <template for:each={row.cells} for:item="cell">
+                                        <div key={cell.id}
+                                            class={cell.cls}
+                                            style={cell.style}
+                                            data-stage={row.stage}
+                                            data-qid={cell.qid}
+                                            onmouseenter={onCellEnter}
+                                            onmouseleave={onCellLeave}>
+                                            <template lwc:if={cell.hasValue}>
+                                                <span class={cell.valCls}>{cell.display}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+
+                                </div>
+                            </template>
+
+                        </div>
+
+                        <!-- Color ramp legend -->
+                        <div class="legend">
+                            <span class="legend-lbl">Low</span>
+                            <div class="legend-bar"></div>
+                            <span class="legend-lbl">High</span>
+                        </div>
+                    </div>
+
+                    <!-- Detail panel — appears below heatmap on cell hover -->
+                    <template lwc:if={activeCell}>
+                        <div class="info-panel">
+                            <div class="info-header">{activeCell.header}</div>
+                            <div class="info-metrics">
+                                <div class="info-metric">
+                                    <span class="m-lbl">Deals</span>
+                                    <span class="m-val">{activeCell.count}</span>
+                                </div>
+                                <div class="info-metric">
+                                    <span class="m-lbl">ACV</span>
+                                    <span class="m-val">{activeCell.acv}</span>
+                                </div>
+                                <div class="info-metric">
+                                    <span class="m-lbl">Weighted</span>
+                                    <span class="m-val">{activeCell.weighted}</span>
+                                </div>
+                            </div>
+                            <template lwc:if={activeCell.hasDeals}>
+                                <ul class="deal-list">
+                                    <template for:each={activeCell.deals} for:item="d">
+                                        <li key={d} class="deal-item">{d}</li>
+                                    </template>
+                                </ul>
+                            </template>
+                        </div>
+                    </template>
+
+                </template>
+
+                <!-- Empty state -->
+                <template lwc:else>
+                    <div class="empty-state">
+                        <lightning-icon icon-name="utility:search" size="medium"></lightning-icon>
+                        <p>No open or won pipeline found in this window.</p>
+                    </div>
+                </template>
+
+            </template>
+
+        </div>
+    </lightning-card>
+</template>
