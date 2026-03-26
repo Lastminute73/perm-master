@@ -5,6 +5,7 @@ export default class AutoResizeTextarea extends LightningElement {
     @api label;
     @api placeholder;
     @api required = false;
+    @api disabled = false;
     @api maxLength = 10000; // Default to 255 characters
 
     @track _internalValue = '';
@@ -25,12 +26,21 @@ export default class AutoResizeTextarea extends LightningElement {
         return `${currentLength} / ${this.maxLength}`;
     }
 
+    // Toggle CSS class based on focus state
+    get textareaClass() {
+        return this.isFocused ? 'slds-textarea' : 'slds-textarea collapsed';
+    }
+
     renderedCallback() {
         const textarea = this.template.querySelector('textarea');
         if (textarea) {
             // Imperatively sync DOM value with internal value
             if (textarea.value !== this._internalValue) {
                 textarea.value = this._internalValue;
+                // After setting value, force collapse if not focused
+                if (!this.isFocused) {
+                    textarea.style.height = '';
+                }
             }
             if (this.isFocused) {
                 this.resizeTextarea();
@@ -40,7 +50,6 @@ export default class AutoResizeTextarea extends LightningElement {
 
     handleFocus() {
         this.isFocused = true;
-        this.resizeTextarea();
     }
 
     handleInput(event) {

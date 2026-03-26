@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <types>
+        <members>Can_Edit_Manager_Assessment_Notes</members>
+        <members>Can_View_Manager_Assessment_Notes</members>
+        <name>CustomPermission</name>
+    </types>
+    <types>
+        <members>Current_Assessment_Update_Screen</members>
+        <name>Flow</name>
+    </types>
+    <types>
+        <members>autoResizeTextarea</members>
+        <name>LightningComponentBundle</name>
+    </types>
+    <types>
+        <members>Opportunity_Assessment_Leadership</members>
+        <members>Opportunity_Assessment_SD_CSM_Access</members>
+        <name>PermissionSet</name>
+    </types>
+    <version>65.0</version>
+</Package>

@@ -5,9 +5,9 @@
             {label}
         </label>
         <div class="slds-form-element__control">
-            <textarea class="slds-textarea" value={_internalValue} placeholder={placeholder} maxlength={maxLength} onfocus={handleFocus} oninput={handleInput} onblur={handleBlur} rows="2"></textarea>
+            <textarea class={textareaClass} value={_internalValue} placeholder={placeholder} maxlength={maxLength}
+                onfocus={handleFocus} oninput={handleInput} onblur={handleBlur} rows="2" disabled={disabled}></textarea>
         </div>
-        
         <div class="slds-grid slds-grid_align-spread slds-m-top_xxx-small">
             <div class="slds-col">
                 <p if:true={hasError} class="slds-form-error">Complete this field.</p>
