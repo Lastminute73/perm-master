@@ -1,0 +1,6 @@
+.collapsed {
+    height: auto !important;
+    max-height: 3.5rem !important;
+    overflow: hidden !important;
+    resize: none !important;
+}
